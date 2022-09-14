@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <script type="module">
+      import run, {paste_data_process} from "./pkg/vscode_starsys.js"
+      async function start() {
+        await run()
+      }
+      start()
+      window.paste_data_process = paste_data_process;
+    </script>
+    <script type="module">
+      paste_data_process('11111')
+    </script>
+    <input/><textarea></textarea>
+    <p>dsssdfdfdd测试</p>
+  </body>
+</html>

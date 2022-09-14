@@ -1,0 +1,55 @@
+[package]
+name = "vscode-starsys"
+version = "0.1.0"
+authors = ["gudaoxuri <i@sunisle.org>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = "s"
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+wasm-bindgen = "0.2.82"
+js-sys = "0.3"
+web-sys = { version = "0.3.59", features = [ 
+  'console',
+  'Location',
+  'Document',
+  'DocumentFragment',
+  'Element',
+  'Node',
+  'NodeList',
+  'Window',
+  'HtmlElement',
+  'HtmlBodyElement',
+  'HtmlInputElement',
+  'HtmlTextAreaElement',
+  'CssStyleDeclaration',
+  'Event',
+  'EventTarget',
+  'KeyboardEvent',
+  ## clipboard
+  'Clipboard',
+  'ClipboardEvent',
+  'Selection',
+  'DataTransfer',
+  ## websocket
+  "MessageEvent",
+  "ProgressEvent",
+  "WebSocket",
+  ## MutationObserver
+  "MutationObserver",
+  "MutationObserverInit",
+  ] }
+getrandom = { version = "0.2", features = ["js"] }
+console_error_panic_hook = { version = "0.1.6", optional = true }
+wee_alloc = { version = "0.4.5", optional = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.13"
