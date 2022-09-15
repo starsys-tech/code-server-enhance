@@ -43,8 +43,6 @@ pub fn generate(settings: &Setting) -> Result<(), JsValue> {
     let body = document.body().unwrap();
     let max_width = cmp::max(body.scroll_width(), body.client_width());
     let max_height = cmp::max(body.scroll_height(), body.client_height());
-    web_sys::console::log_1(&format!("--------------x:{},{}", max_width, max_height).into());
-
     let cols = (max_width as u32 - settings.start_x + settings.space_x) / (settings.width + settings.space_x);
     //let space_x = (max_width as u32 - settings.start_x + settings.width * cols) / (cols - 1);
     let rows = (max_height as u32 - settings.start_y + settings.space_y) / (settings.height + settings.space_y);

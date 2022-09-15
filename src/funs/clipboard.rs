@@ -22,7 +22,6 @@ pub fn paste_data_process(text: &str) -> String {
     if text == "__STARSYS__" {
         let t = DATA.lock().unwrap();
         if !t.is_empty() {
-            web_sys::console::trace_1(&format!("-----------2：{}", t.as_str()).into());
             return decrypt(&SEED.lock().unwrap(), t.as_str());
         }
     }
