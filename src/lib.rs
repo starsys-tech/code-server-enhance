@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use funs::{
     clipboard, task,
     watermark::{self, Setting},
-    webscoket,
+    webscoket, disable_dev_tools,
 };
 use wasm_bindgen::prelude::*;
 
@@ -34,7 +34,8 @@ pub fn run() -> Result<(), JsValue> {
         .unwrap();
         ()
     })?;
-    task::init()
+    task::init()?;
+    disable_dev_tools::init()
 }
 
 #[wasm_bindgen]
