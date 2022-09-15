@@ -1,14 +1,23 @@
-From 0272eb2f8cd746446d2272329d7bd012395d2e86 Mon Sep 17 00:00:00 2001
-From: gudaoxuri <i@sunisle.org>
-Date: Tue, 13 Sep 2022 22:41:20 -0700
-Subject: [PATCH] starsys functions
-
----
- src/node/routes/index.ts   |   3 +
- src/node/routes/starsys.ts | 149 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 152 insertions(+)
- create mode 100644 src/node/routes/starsys.ts
-
+diff --git a/lib/vscode b/lib/vscode
+index 2062a59c..33bddced 160000
+--- a/lib/vscode
++++ b/lib/vscode
+@@ -1 +1 @@
+-Subproject commit 2062a59ca1a586d8a6e7bf483841085a94c440a4
++Subproject commit 33bddced6fadcf33702bb4172a060550ee1e062a
+diff --git a/package.json b/package.json
+index 69727265..a194727e 100644
+--- a/package.json
++++ b/package.json
+@@ -31,7 +31,7 @@
+     "lint": "./ci/dev/lint.sh",
+     "test": "echo 'Run yarn test:unit or yarn test:e2e' && exit 1",
+     "ci": "./ci/dev/ci.sh",
+-    "watch": "VSCODE_DEV=1 VSCODE_IPC_HOOK_CLI= NODE_OPTIONS='--max_old_space_size=32384 --trace-warnings' ts-node ./ci/dev/watch.ts",
++    "watch": "LOG_LEVEL=trace PORT=3000 VSCODE_DEV=1 VSCODE_IPC_HOOK_CLI= NODE_OPTIONS='--max_old_space_size=32384 --trace-warnings' ts-node ./ci/dev/watch.ts --user-data-dir=/tmp/vscode_dev",
+     "icons": "./ci/dev/gen_icons.sh"
+   },
+   "main": "out/node/entry.js",
 diff --git a/src/node/routes/index.ts b/src/node/routes/index.ts
 index a2046b6a..009b8329 100644
 --- a/src/node/routes/index.ts
@@ -32,10 +41,10 @@ index a2046b6a..009b8329 100644
        app.server.getConnections((error, count) => {
 diff --git a/src/node/routes/starsys.ts b/src/node/routes/starsys.ts
 new file mode 100644
-index 00000000..05d37c82
+index 00000000..36d897ad
 --- /dev/null
 +++ b/src/node/routes/starsys.ts
-@@ -0,0 +1,149 @@
+@@ -0,0 +1,151 @@
 +import { logger } from "@coder/logger"
 +import { App } from "../app"
 +import { Router as WsRouter, wss } from "../wsRouter"
@@ -84,7 +93,9 @@ index 00000000..05d37c82
 +              return
 +            }
 +            case "close": {
-+              connection.processClose()
++              const errorKind = items[1]
++              connection.processClose(errorKind)
++              ws.close()
 +              return
 +            }
 +          }
@@ -101,7 +112,7 @@ index 00000000..05d37c82
 +  _latestCheckTime: number
 +  processInit: () => any
 +  processCheck: (checkCode: string) => any
-+  processClose: () => void
++  processClose: (errorKind: string) => void
 +  check: () => void
 +} = {
 +  app: undefined,
@@ -122,7 +133,7 @@ index 00000000..05d37c82
 +      crypt.decrypt(timestamp, encryptText) !== config.ak + config.checkCode
 +    ) {
 +      logger.error("Starsys check illegal.")
-+      connection.processClose()
++      connection.processClose("CC")
 +      return {}
 +    }
 +    const now = Date.now()
@@ -131,9 +142,11 @@ index 00000000..05d37c82
 +      checkCode: now + crypt.encrypt(now + "", config.ak + config.checkCode),
 +    }
 +  },
-+  processClose: (): void => {
-+    logger.error("Starsys abnormal, shutdown web service.")
++  processClose: (errorKind: string): void => {
++    logger.error("Starsys abnormal by " + errorKind + ", shutdown web service.")
 +    connection.app!.server.close()
++    clearInterval(connection._checker)
++    connection._checker = undefined
 +  },
 +  check: (): void => {
 +    if (connection._checker !== undefined) {
@@ -146,9 +159,7 @@ index 00000000..05d37c82
 +        connection.app!.server.getConnections((_, count) => {
 +          if (count !== 0) {
 +            logger.error("Starsys check timeout.")
-+            connection.processClose()
-+            clearInterval(connection._checker)
-+            connection._checker = undefined
++            connection.processClose("TO")
 +          } else {
 +            logger.info("Starsys remove check.")
 +            clearInterval(connection._checker)
@@ -185,6 +196,3 @@ index 00000000..05d37c82
 +
 +logger.info("Enabled starsys functions.")
 +config.load()
--- 
-2.25.1
-

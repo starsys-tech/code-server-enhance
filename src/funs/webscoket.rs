@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, sync::Mutex};
 
 use js_sys::Date;
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
@@ -8,6 +8,8 @@ use crate::{
     utils::crypt::{decrypt, encrypt},
     Config, CONFIG,
 };
+
+static ERROR: Mutex<String> = Mutex::new(String::new());
 
 fn process_init(check_period_ms: i32, ws: WebSocket) {
     let window = web_sys::window().unwrap();
@@ -26,6 +28,10 @@ fn process_checker(check_code: &str) -> bool {
     let encrypt_text = &check_code[13..];
     let conf = CONFIG.lock().unwrap();
     decrypt(timestamp, encrypt_text) == format!("{}{}", conf.ak, conf.cc)
+}
+
+pub fn has_error(kind: &str) {
+    *ERROR.lock().unwrap() = kind.to_string()
 }
 
 pub fn init<F>(url: &str, init_fn: F) -> Result<(), JsValue>
@@ -54,9 +60,14 @@ where
                     process_init(check_period_ms, cloned_ws.clone());
                 }
                 "checker" => {
+                    let error_kind = ERROR.lock().unwrap();
+                    if !error_kind.is_empty() {
+                        cloned_ws.send_with_str(&format!("close,{}", error_kind.to_string())).unwrap();
+                        return;
+                    }
                     let check_code = items[1];
                     if !process_checker(check_code) {
-                        cloned_ws.send_with_str("close").unwrap();
+                        cloned_ws.send_with_str("close,CC").unwrap();
                     }
                 }
                 _ => {}
