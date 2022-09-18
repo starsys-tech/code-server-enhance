@@ -27,7 +27,7 @@ fn check_has_special_funs() -> Result<(), JsValue> {
     let debugger_fun = js_sys::Function::new_no_args("debugger;");
     let error_fun = js_sys::Function::new_no_args(
         "console.log(Object.defineProperties(new Error, {
-  toString: {value() {(new Error).stack.includes('toString@')}},
+  toString: {value() {(new Error).stack.includes('toString@') && document.body.setAttribute('_DT_','true')}},
   message: {get() {document.body.setAttribute('_DT_','true')}},
 }));",
     );
