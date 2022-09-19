@@ -22,9 +22,11 @@ This project is used to enhance the security and integration capabilities of [co
 ### Code manipulation
 1. Encrypt Cut and Paste and Copy
     1. ✅Main Panel process
-    1. ✅Console process
+    1. ✅Termianl process
     1. ✅Developer tools process
 1. Disable code download
+    1. ✅Download file in conetext menu
+    1. Downlaod in termianl
 1. Disable copy remote file url
 1. Disable code sharing
 1. Operation anti-cracking
@@ -54,8 +56,8 @@ todo
 
 1. set up the `code-server` environment and compile code according to https://github.com/coder/code-server/blob/main/docs/CONTRIBUTING.md
 1. clone this project
-1. copy `paths/code-server.patch` to the root of the code-server project and execute `git apply code-server.patch`
-1. copy `paths/vscode.patch` to the code-server project under `lib/vscode` and execute `git apply vscode.patch`
+1. copy `pathes/code-server.patch` to the root of the code-server project and execute `git apply code-server.patch`
+1. copy `pathes/vscode.patch` to the code-server project under `lib/vscode` and execute `git apply vscode.patch`
 1. compile code-server project according to https://github.com/coder/code-server/blob/main/docs/CONTRIBUTING.md#build
 
 # Contributing
