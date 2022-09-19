@@ -11,6 +11,13 @@ This project is used to enhance the security and integration capabilities of [co
 ### Code watermarking
 1. ✅Watermark display
 1. Watermark anti-cracking
+    1. ✅Window resize
+    1. ✅Delete watermark
+    1. ✅Modify watermark attributes (location, size, transparency, etc.)
+    1. ✅Modify watermark class
+    1. ✅Modify watermark content
+    1. ✅Overwrite watermark
+    1. Browser compatibility
 
 ### Code manipulation
 1. Encrypt Cut and Paste and Copy

@@ -3,9 +3,9 @@ mod utils;
 use std::sync::Mutex;
 
 use funs::{
-    clipboard, task,
+    clipboard, disable_dev_tools, task,
     watermark::{self, Setting},
-    webscoket, disable_dev_tools,
+    webscoket,
 };
 use wasm_bindgen::prelude::*;
 
@@ -24,7 +24,14 @@ pub fn run() -> Result<(), JsValue> {
     web_sys::console::log_1(&"Enable starsys functions.".into());
     let window = web_sys::window().unwrap();
     console_error_panic_hook::set_once();
+    disable_dev_tools::init()?;
     clipboard::init()?;
+    watermark::init(Setting {
+        txt1: "starsys".to_string(),
+        txt2: "initializing".to_string(),
+        ..Default::default()
+    })
+    .unwrap();
     webscoket::init(&format!("wss://{}/starsys", window.location().host()?), |ak: &str, cc: &str| {
         watermark::init(Setting {
             txt1: ak.to_string(),
@@ -34,8 +41,7 @@ pub fn run() -> Result<(), JsValue> {
         .unwrap();
         ()
     })?;
-    task::init()?;
-    disable_dev_tools::init()
+    task::init()
 }
 
 #[wasm_bindgen]
